@@ -7,8 +7,10 @@ package com.mycompany.CalculatorLab.controller;
 
 import com.mycompany.CalculatorLab.model.lab1Service;
 import com.mycompany.CalculatorLab.model.lab2Service;
+import com.mycompany.CalculatorLab.model.lab3Service;
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.System.out;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,12 +22,19 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Nolan
  */
-@WebServlet(name = "lab2Controller", urlPatterns = {"/lab2Controller"})
-public class lab2Controller extends HttpServlet {
+@WebServlet(name = "lab3Controller", urlPatterns = {"/lab3Controller"})
+public class lab3Controller extends HttpServlet {
 
-    private static final String LENGTH = "length";
-    private static final String WIDTH = "width";
-    private static final String HOME_PAGE = "/lab2.jsp";
+    private static final String LENGTH = "rLength";
+    private static final String WIDTH = "rWidth";
+    private static final String HOME_PAGE = "/lab3.jsp";
+    private static final String RADIUS = "radius";
+    private static final String TX = "tx";
+    private static final String TY = "ty";
+    private static final String ACTION = "action";
+    private static final String RECTANGLE = "rectangleForm";
+    private static final String CIRCLE = "circleForm";
+    private static final String TRIANGLE = "triangleForm";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,26 +48,50 @@ public class lab2Controller extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        lab2Service ls = null;
-        
-        try  {
-            
-            ls = new lab2Service();
-            double area = 0;
-            
+
+        String action = request.getParameter(ACTION);
+        lab3Service ls = null;
+
+        try {
+                        
+            ls = new lab3Service();
+
+            double recArea = 0;
+            double cirArea = 0;
+            double hyp = 0;
+
             double length = Double.parseDouble(request.getParameter(LENGTH));
             double width = Double.parseDouble(request.getParameter(WIDTH));
             
-            area = ls.calculateArea(length, width);
-                      
-            request.setAttribute("result", "The Area of the Rectangle is:");
-            request.setAttribute("msg", area);
+            double radius = Double.parseDouble(request.getParameter(RADIUS));
+            
+            double tx = Double.parseDouble(request.getParameter(TX));
+            double ty = Double.parseDouble(request.getParameter(TY));
+
+            if (action.equals(RECTANGLE)) {
+
+                recArea = ls.calculateAreaRectangle(length, width);
+                request.setAttribute("recResult", "The Area of the Rectangle is:");
+                request.setAttribute("recMsg", recArea);
+
+            } else if (action.equals(CIRCLE)) {
+
+                cirArea = ls.calculateAreaCircle(radius);
+                request.setAttribute("cirResult", "The Area of the Circle is:");
+                request.setAttribute("cirMsg", cirArea);
+
+            } else if (action.equals(TRIANGLE)) {
+
+                hyp = ls.calculateHypTriangle(tx, ty);
+                request.setAttribute("triResult", "The Value of the Hypotenuse is:");
+                request.setAttribute("triMsg", hyp);
+
+            }
 
         } catch (Exception e) {
             request.setAttribute("errMsg", e.getMessage());
         }
-        
+
         RequestDispatcher view = request.getRequestDispatcher(HOME_PAGE);
         view.forward(request, response);
     }
